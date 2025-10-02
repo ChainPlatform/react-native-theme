@@ -13,45 +13,67 @@ const colorHover = (c, isDark) =>
     isDark ? chroma(c).brighten(0.6).hex() : chroma(c).darken(0.3).hex();
 const colorFocus = (c, isDark) =>
     isDark ? chroma(c).darken(0.6).hex() : chroma(c).darken(0.6).hex();
-const textContrast = (bg) => (chroma(bg).luminance() < 0.5 ? "#FFFFFF" : "#111827");
+
+// choose best contrast between white and dark text (#111827)
+const bestContrast = (bg) => {
+    const whiteContrast = chroma.contrast(bg, "#FFFFFF");
+    const darkContrast = chroma.contrast(bg, "#111827");
+    return whiteContrast >= darkContrast ? "#FFFFFF" : "#111827";
+};
 
 // ===== generate colors =====
 const generateColors = (primaryLight, isDark) => {
+    // primary for theme (dark variant derived)
     const primary = isDark
         ? chroma(primaryLight).darken(1.5).saturate(0.3).hex()
         : chroma(primaryLight).hex();
 
+    // secondary based on primary hue (complement-ish)
     const secondary = chroma(primary)
         .set("hsl.h", (chroma(primary).get("hsl.h") + 160) % 360)
         .hex();
 
-    const success = chroma(primary)
-        .set("hsl.h", (chroma(primary).get("hsl.h") + 100) % 360)
-        .saturate(isDark ? 0.4 : 0.2)
-        .hex();
+    // derive saturation / lightness hints from primary (to harmonize semantic colors)
+    const primaryCh = chroma(primary);
+    const primaryS = Number(primaryCh.get("hsl.s")) || 0.5; // fallback
+    // clamp saturation so semantics don't become too dull or too neon
+    const sat = Math.max(0.45, Math.min(0.85, primaryS * 1.0));
+    // lightness base for semantic colors: light vs dark
+    const semL = isDark ? 0.40 : 0.56;
 
-    const warning = chroma(primary)
-        .set("hsl.h", (chroma(primary).get("hsl.h") + 60) % 360)
-        .saturate(isDark ? 0.3 : 0)
-        .hex();
+    // semantic fixed-hue colors but tuned by primary's sat & theme lightness
+    const success = chroma.hsl(120, sat, semL).hex();   // green
+    const warning = chroma.hsl(40, sat, semL).hex();    // orange
+    const error = chroma.hsl(0, sat, semL).hex();       // red
+    const info = chroma.hsl(210, sat, semL).hex();      // blue
+    const notification = chroma.hsl(280, sat, semL).hex(); // purple
 
-    const error = chroma(primary)
-        .set("hsl.h", (chroma(primary).get("hsl.h") - 60 + 360) % 360)
-        .saturate(isDark ? 0.5 : 0.3)
-        .hex();
+    // surfaces (background / card / border)
+    // use a separate base so surfaces are visually separated from primary
+    const surfaceBase = isDark
+        ? chroma(primary).darken(4.5) // dark background anchored from primary
+        : chroma(primary).brighten(1.5); // light background slightly brightened
+    const background = surfaceBase.hex();
+    const card = isDark ? surfaceBase.brighten(0.5).hex() : surfaceBase.brighten(1).hex();
+    // in light mode border should be slightly darker than card to be visible
+    // in dark mode border slightly lighter than card
+    const border = isDark ? surfaceBase.brighten(1.2).hex() : surfaceBase.darken(0.5).hex();
 
-    const notification = chroma(primary)
-        .set("hsl.h", (chroma(primary).get("hsl.h") + 200) % 360)
-        .saturate(isDark ? 0.3 : 0.2)
-        .hex();
+    // text colors:
+    // - text: contrast with background
+    // - textPrimary: contrast with primary
+    // - textSecondary: contrast with secondary
+    const text = bestContrast(background);
+    const textPrimary = bestContrast(primary);
+    const textSecondary = bestContrast(secondary);
 
-    // background/card/border
-    let bgBase = isDark ? chroma(primary).darken(4.5) : chroma(primary).brighten(1.5);
-    const background = bgBase.hex();
-    const card = isDark ? bgBase.brighten(0.5).hex() : bgBase.brighten(1).hex();
-    const border = isDark ? bgBase.brighten(1.2).hex() : bgBase.darken(0.5).hex();
-
-    const text = textContrast(background);
+    // overlay & shadow (neutral, not brand-dependent)
+    const overlay = isDark
+        ? chroma("black").alpha(0.6).css()  // stronger dim in dark
+        : chroma("black").alpha(0.25).css(); // softer dim in light
+    const shadow = isDark
+        ? chroma("black").alpha(0.45).css()
+        : chroma("black").alpha(0.15).css();
 
     return {
         primary,
@@ -59,11 +81,16 @@ const generateColors = (primaryLight, isDark) => {
         success,
         warning,
         error,
+        info,
         notification,
         background,
         card,
         border,
         text,
+        textPrimary,
+        textSecondary,
+        overlay,
+        shadow,
     };
 };
 
@@ -85,33 +112,26 @@ export const createTheme = (options = {}) => {
                 secondaryHover: colorHover(c.secondary, isDark),
                 secondaryFocus: colorFocus(c.secondary, isDark),
 
+                // semantic: single-tone (no need hover/focus, but kept floats if you use them)
                 success: c.success,
-                successHover: colorHover(c.success, isDark),
-                successFocus: colorFocus(c.success, isDark),
-
                 warning: c.warning,
-                warningHover: colorHover(c.warning, isDark),
-                warningFocus: colorFocus(c.warning, isDark),
-
                 error: c.error,
-                errorHover: colorHover(c.error, isDark),
-                errorFocus: colorFocus(c.error, isDark),
-
+                info: c.info,
                 notification: c.notification,
-                notificationHover: colorHover(c.notification, isDark),
-                notificationFocus: colorFocus(c.notification, isDark),
 
                 background: c.background,
                 card: c.card,
                 border: c.border,
                 borderHover: colorHover(c.border, isDark),
 
+                // text tokens
                 text: c.text,
-                textPrimary: c.text,
-                textSecondary: chroma(c.text).alpha(0.7).css(),
+                textPrimary: c.textPrimary,
+                textSecondary: c.textSecondary,
 
-                overlay: chroma(c.primary).alpha(isDark ? 0.2 : 0.12).css(),
-                shadow: isDark ? chroma("black").alpha(0.7).css() : chroma("black").alpha(0.15).css(),
+                // overlay & shadow take the neutral values
+                overlay: c.overlay,
+                shadow: c.shadow,
             },
             spacing: {
                 xs: setSize(4),
@@ -163,8 +183,7 @@ export const setTheme = (themeObject) => {
         light: { ...defaultTheme.light, ...(themeObject.light || {}) },
         dark: { ...defaultTheme.dark, ...(themeObject.dark || {}) },
         default:
-            themeObject.default ||
-            (themeObject.dark ? defaultTheme.dark : defaultTheme.light),
+            themeObject.default || (themeObject.dark ? defaultTheme.dark : defaultTheme.light),
     };
 
     ["light", "dark"].forEach((key) => {
