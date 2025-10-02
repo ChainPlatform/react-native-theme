@@ -1,0 +1,32 @@
+{
+    "name": "@chainplatform/theme",
+    "version": "0.1.0",
+    "main": "index.js",
+    "react-native": "index.js",
+    "description": "A lightweight **theming system** for React Native / React Native Web. Supports light / dark mode, custom palettes, hover/focus states, and can be used in both Class Components and Function Components.",
+    "author": "Chain Platform <santran686@gmail.com> (https://chainplatform.net/)",
+    "license": "MIT",
+    "keywords": [
+        "react",
+        "react-native",
+        "react-native-web",
+        "@chainplatform/theme",
+        "@chainplatform/layout",
+        "react-native-theme",
+        "chroma-js"
+    ],
+    "homepage": "https://github.com/ChainPlatform/react-native-theme",
+    "bugs": "https://github.com/ChainPlatform/react-native-theme/issues",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/ChainPlatform/react-native-theme.git"
+    },
+    "dependencies": {},
+    "peerDependencies": {
+        "react": "*",
+        "react-native": "*",
+        "react-native-web": "*",
+        "@chainplatform/layout": "*",
+        "chroma-js": "*"
+    }
+}
