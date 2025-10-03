@@ -96,7 +96,7 @@ const generateColors = (primaryLight, isDark) => {
 
 // ===== create theme =====
 export const createTheme = (options = {}) => {
-    const primaryLight = options.primary || "#2E6F40";
+    const primaryLight = options.primary || "#002fab";
     const isDarkDefault = options.dark ?? false;
 
     const buildTheme = (isDark) => {
