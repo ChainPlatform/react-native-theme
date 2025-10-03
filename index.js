@@ -214,7 +214,6 @@ export const createTheme = (options = {}) => {
                 overlay: c.overlay,
                 shadow: c.shadow,
             },
-            typography,
             spacing: {
                 xs: setSize(4),
                 sm: setSize(8),
@@ -239,6 +238,7 @@ export const createTheme = (options = {}) => {
         light,
         dark,
         default: isDarkDefault ? dark : light,
+        mode: isDarkDefault ? 'dark' : 'light',
     };
 };
 
@@ -258,8 +258,8 @@ export const setTheme = (themeObject) => {
     currentThemeFull = {
         light: { ...defaultTheme.light, ...(themeObject.light || {}) },
         dark: { ...defaultTheme.dark, ...(themeObject.dark || {}) },
-        default:
-            themeObject.default || (themeObject.dark ? defaultTheme.dark : defaultTheme.light),
+        default: themeObject.default || (themeObject.dark ? defaultTheme.dark : defaultTheme.light),
+        mode: typeof themeObject.mode != "undefined" ? themeObject.mode : defaultTheme.mode,
     };
 
     ["light", "dark"].forEach((key) => {
