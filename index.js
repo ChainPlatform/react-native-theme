@@ -1,6 +1,86 @@
 import React from "react";
+import { PixelRatio } from "react-native";
 import chroma from "chroma-js";
-import { setSize } from "@chainplatform/layout";
+import sdkStyles, { setSize } from "@chainplatform/layout";
+
+// ===== REM & Font Scaling =====
+const MOBILE_BASE = 375;
+const REM_MIN = 0.92;
+const REM_MAX = 1.12;
+const FONT_SCALE_FACTOR = 0.5;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+export const getRem = () => {
+    if (sdkStyles.DESKTOP) return 1;
+    const raw = sdkStyles.WIDTH / MOBILE_BASE;
+    return clamp(raw, REM_MIN, REM_MAX);
+};
+
+export const getUserFontScale = () =>
+    PixelRatio.getFontScale ? PixelRatio.getFontScale() : 1;
+
+export const getFontSize = (base) => {
+    const rem = getRem();
+    const userScale = getUserFontScale();
+    if (sdkStyles.DESKTOP) {
+        const v = base * userScale;
+        return Math.round(clamp(v, Math.max(10, base * 0.85), Math.max(28, base * 1.25)));
+    }
+    const blended = 1 + (rem - 1) * FONT_SCALE_FACTOR;
+    const v = base * blended * userScale;
+    return Math.round(clamp(v, Math.max(10, base * 0.85), Math.max(36, base * 1.35)));
+};
+
+// ===== Typography Tokens =====
+const buildTypography = (preset = "balanced") => {
+    const presets = {
+        balanced: {
+            mobile: { xs: 12, sm: 14, body: 16, h4: 16, h3: 18, h2: 20, h1: 24 },
+            desktop: { xs: 12, sm: 13, body: 14, h4: 15, h3: 16, h2: 18, h1: 22 },
+        },
+        web: {
+            mobile: { xs: 12, sm: 13, body: 15, h4: 15, h3: 16, h2: 18, h1: 22 },
+            desktop: { xs: 12, sm: 13, body: 14, h4: 15, h3: 16, h2: 18, h1: 20 },
+        },
+        compact: {
+            mobile: { xs: 11, sm: 13, body: 14, h4: 14, h3: 15, h2: 17, h1: 20 },
+            desktop: { xs: 11, sm: 12, body: 13, h4: 14, h3: 15, h2: 16, h1: 18 },
+        },
+    };
+    const set = presets[preset] || presets.balanced;
+    const source = sdkStyles.DESKTOP ? set.desktop : set.mobile;
+
+    const tokens = {};
+    Object.keys(source).forEach((k) => {
+        tokens[k] = getFontSize(source[k]);
+    });
+
+    return {
+        ...tokens,
+        caption: tokens.xs,
+        small: tokens.sm,
+        paragraph: tokens.body,
+        headline4: tokens.h4,
+        headline3: tokens.h3,
+        headline2: tokens.h2,
+        headline1: tokens.h1,
+        lineHeight: {
+            xs: Math.round(tokens.xs * 1.4),
+            sm: Math.round(tokens.sm * 1.4),
+            body: Math.round(tokens.body * 1.5),
+            h4: Math.round(tokens.h4 * 1.4),
+            h3: Math.round(tokens.h3 * 1.35),
+            h2: Math.round(tokens.h2 * 1.25),
+            h1: Math.round(tokens.h1 * 1.2),
+        },
+        fontWeight: {
+            regular: "400",
+            medium: "500",
+            semibold: "600",
+            bold: "700",
+        },
+    };
+};
 
 // ===== global state =====
 let listeners = [];
@@ -101,16 +181,17 @@ export const createTheme = (options = {}) => {
 
     const buildTheme = (isDark) => {
         const c = generateColors(primaryLight, isDark);
+        const typography = buildTypography(options.preset || "balanced");
         return {
             dark: isDark,
             colors: {
                 primary: c.primary,
-                primaryHover: colorHover(c.primary, isDark),
-                primaryFocus: colorFocus(c.primary, isDark),
+                primary_hover: colorHover(c.primary, isDark),
+                primary_focus: colorFocus(c.primary, isDark),
 
                 secondary: c.secondary,
-                secondaryHover: colorHover(c.secondary, isDark),
-                secondaryFocus: colorFocus(c.secondary, isDark),
+                secondary_hover: colorHover(c.secondary, isDark),
+                secondary_focus: colorFocus(c.secondary, isDark),
 
                 // semantic: single-tone (no need hover/focus, but kept floats if you use them)
                 success: c.success,
@@ -126,13 +207,14 @@ export const createTheme = (options = {}) => {
 
                 // text tokens
                 text: c.text,
-                textPrimary: c.textPrimary,
-                textSecondary: c.textSecondary,
+                primary_text: c.textPrimary,
+                secondary_text: c.textSecondary,
 
                 // overlay & shadow take the neutral values
                 overlay: c.overlay,
                 shadow: c.shadow,
             },
+            typography,
             spacing: {
                 xs: setSize(4),
                 sm: setSize(8),
@@ -146,13 +228,7 @@ export const createTheme = (options = {}) => {
                 lg: setSize(16),
                 xl: setSize(24),
             },
-            fontSize: {
-                xs: setSize(12),
-                sm: setSize(14),
-                md: setSize(16),
-                lg: setSize(20),
-                xl: setSize(28),
-            },
+            fontSize: typography,
         };
     };
 

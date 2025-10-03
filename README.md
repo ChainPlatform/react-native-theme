@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.md }}>
-      <Text style={{ color: theme.colors.textPrimary, fontSize: theme.fontSize.lg }}>
+      <Text style={{ color: theme.colors.primary_text, fontSize: theme.fontSize.lg }}>
         Hello from {theme.dark ? "Dark" : "Light"} mode 👋
       </Text>
     </View>
@@ -103,7 +103,7 @@ setTheme({
     background: "#F8FAFC",
     card: "#FFFFFF",
     border: "#E2E8F0",
-    textPrimary: "#0F172A",
+    primary_text: "#0F172A",
     text: "#334155",
     success: "#10B981",
     error: "#EF4444",
@@ -157,7 +157,7 @@ A generated theme includes:
     secondary, secondaryHover, secondaryFocus,
     success, error, warning, notification, notificationHover,
     background, card, border,
-    textPrimary, text,
+    primary_text, text,
   },
   spacing: { xs, sm, md, lg, xl },
   radius: { sm, md, lg, xl },
