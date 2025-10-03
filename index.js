@@ -4,16 +4,13 @@ import chroma from "chroma-js";
 import sdkStyles, { setSize } from "@chainplatform/layout";
 
 // ===== REM & Font Scaling =====
-const MOBILE_BASE = 375;
 const REM_MIN = 0.92;
 const REM_MAX = 1.12;
 const FONT_SCALE_FACTOR = 0.5;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 export const getRem = () => {
-    if (sdkStyles.DESKTOP) return 1;
-    const raw = sdkStyles.WIDTH / MOBILE_BASE;
-    return clamp(raw, REM_MIN, REM_MAX);
+    return clamp(sdkStyles.REM, REM_MIN, REM_MAX);
 };
 
 export const getUserFontScale = () =>

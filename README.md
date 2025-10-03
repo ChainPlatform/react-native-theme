@@ -127,15 +127,6 @@ console.log(customTheme.colors.primary); // → #8B5CF6
 
 ## ⚙️ API
 
-### 🔑 `ThemeProvider` Props
-
-| Prop       | Type     | Default     | Description |
-|------------|----------|-------------|-------------|
-| `primary`  | `string` | `#007AFF`   | Base primary color to generate palette |
-| `children` | `node`   | `null`      | App content |
-
----
-
 ### 🔧 Theme Functions
 
 - `useTheme()` → Hook to get current theme (function components)  
