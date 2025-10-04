@@ -98,6 +98,18 @@ const bestContrast = (bg) => {
     return whiteContrast >= darkContrast ? "#FFFFFF" : "#111827";
 };
 
+function ensureContrast(foreground, background, ratio = 4.5) {
+    let color = chroma(foreground);
+    let step = 0;
+    while (chroma.contrast(color, background) < ratio && step < 5) {
+        color = chroma(color).luminance() > chroma(background).luminance()
+            ? color.darken(0.5)
+            : color.brighten(0.5);
+        step++;
+    }
+    return color.hex();
+}
+
 // ===== generate colors =====
 const generateColors = (primaryLight, isDark) => {
     // primary for theme (dark variant derived)
@@ -152,6 +164,16 @@ const generateColors = (primaryLight, isDark) => {
         ? chroma("black").alpha(0.45).css()
         : chroma("black").alpha(0.15).css();
 
+    const tabBarActive = isDark ? (chroma(primary)
+        .luminance() < 0.5
+        ? chroma(primary).brighten(1.5).desaturate(1).hex()
+        : chroma(primary).darken(1.5).desaturate(1).hex()) : primary;
+    const tabBarInactive = chroma(card)
+        .luminance() < 0.5
+        ? chroma(card).brighten(1.5).desaturate(1).hex()
+        : chroma(card).darken(1.5).desaturate(1).hex();
+
+
     return {
         primary,
         secondary,
@@ -168,6 +190,8 @@ const generateColors = (primaryLight, isDark) => {
         textSecondary,
         overlay,
         shadow,
+        tabBarActive,
+        tabBarInactive,
     };
 };
 
@@ -179,16 +203,20 @@ export const createTheme = (options = {}) => {
     const buildTheme = (isDark) => {
         const c = generateColors(primaryLight, isDark);
         const typography = buildTypography(options.preset || "balanced");
+        const primary_border = colorFocus(c.primary, isDark);
+        const secondary_border = colorFocus(c.secondary, isDark);
         return {
             dark: isDark,
             colors: {
                 primary: c.primary,
                 primary_hover: colorHover(c.primary, isDark),
-                primary_focus: colorFocus(c.primary, isDark),
+                primary_focus: primary_border,
+                primary_border: primary_border,
 
                 secondary: c.secondary,
                 secondary_hover: colorHover(c.secondary, isDark),
-                secondary_focus: colorFocus(c.secondary, isDark),
+                secondary_focus: secondary_border,
+                secondary_border: secondary_border,
 
                 // semantic: single-tone (no need hover/focus, but kept floats if you use them)
                 success: c.success,
@@ -200,16 +228,21 @@ export const createTheme = (options = {}) => {
                 background: c.background,
                 card: c.card,
                 border: c.border,
-                borderHover: colorHover(c.border, isDark),
+                border_hover: colorHover(c.border, isDark),
+                border_focus: colorFocus(c.border, isDark),
 
                 // text tokens
                 text: c.text,
                 primary_text: c.textPrimary,
                 secondary_text: c.textSecondary,
 
+
                 // overlay & shadow take the neutral values
                 overlay: c.overlay,
                 shadow: c.shadow,
+
+                tabBarActive: c.tabBarActive,
+                tabBarInactive: c.tabBarInactive,
             },
             spacing: {
                 xs: setSize(4),
