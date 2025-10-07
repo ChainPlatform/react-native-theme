@@ -98,16 +98,42 @@ const bestContrast = (bg) => {
     return whiteContrast >= darkContrast ? "#FFFFFF" : "#111827";
 };
 
-function ensureContrast(foreground, background, ratio = 4.5) {
-    let color = chroma(foreground);
-    let step = 0;
-    while (chroma.contrast(color, background) < ratio && step < 5) {
-        color = chroma(color).luminance() > chroma(background).luminance()
-            ? color.darken(0.5)
-            : color.brighten(0.5);
-        step++;
+function getTabBarInactive(card) {
+    const base = chroma(card);
+    const isDark = base.luminance() < 0.5;
+
+    let color;
+
+    if (isDark) {
+        color = "#B0B3B8";
+        if (chroma.contrast(color, card) < 3) {
+            color = chroma(color).brighten(0.6);
+        }
+    } else {
+        color = "#2E2E2E";
+        if (chroma.contrast(color, card) < 4) {
+            color = chroma.mix(color, "#000", 0.5, "lab");
+        }
     }
-    return color.hex();
+
+    return chroma(color).hex();
+}
+
+export function getTabBarActive(card, primary, minContrast = 3) {
+    let active = chroma(primary);
+    const isDark = chroma(card).luminance() < 0.5;
+
+    active = isDark ? active.brighten(0.8) : active.darken(0.8);
+
+    let contrast = chroma.contrast(active, card);
+    if (contrast < minContrast) {
+        const adjust = minContrast - contrast;
+        active = isDark
+            ? active.brighten(adjust * 0.6)
+            : active.darken(adjust * 0.6);
+    }
+
+    return chroma.mix(primary, active, 0.6, "lab").hex();
 }
 
 // ===== generate colors =====
@@ -158,21 +184,14 @@ const generateColors = (primaryLight, isDark) => {
 
     // overlay & shadow (neutral, not brand-dependent)
     const overlay = isDark
-        ? chroma("black").alpha(0.6).css()  // stronger dim in dark
-        : chroma("black").alpha(0.25).css(); // softer dim in light
+        ? chroma("black").alpha(0.6).css()
+        : chroma("black").alpha(0.25).css();
     const shadow = isDark
         ? chroma("black").alpha(0.45).css()
         : chroma("black").alpha(0.15).css();
 
-    const tabBarActive = isDark ? (chroma(primary)
-        .luminance() < 0.5
-        ? chroma(primary).brighten(1.5).desaturate(1).hex()
-        : chroma(primary).darken(1.5).desaturate(1).hex()) : primary;
-    const tabBarInactive = chroma(card)
-        .luminance() < 0.5
-        ? chroma(card).brighten(1.5).desaturate(1).hex()
-        : chroma(card).darken(1.5).desaturate(1).hex();
-
+    const tabBarActive = primary;
+    const tabBarInactive = getTabBarInactive(card);
 
     return {
         primary,
@@ -236,13 +255,12 @@ export const createTheme = (options = {}) => {
                 primary_text: c.textPrimary,
                 secondary_text: c.textSecondary,
 
-
                 // overlay & shadow take the neutral values
-                overlay: c.overlay,
-                shadow: c.shadow,
+                // overlay: c.overlay,
+                // shadow: c.shadow,
 
-                tabBarActive: c.tabBarActive,
-                tabBarInactive: c.tabBarInactive,
+                tab_bar_active: c.primary,
+                tab_bar_inactive: c.tabBarInactive,
             },
             spacing: {
                 xs: setSize(4),
@@ -276,22 +294,69 @@ export const createTheme = (options = {}) => {
 currentThemeFull = createTheme();
 currentTheme = currentThemeFull.default;
 
+const filterThemeKeys = (theme = {}) => {
+    const filtered = {};
+    THEME_KEYS.forEach(key => {
+        if (theme[key] !== undefined) {
+            filtered[key] = theme[key];
+        }
+    });
+    return filtered;
+};
+
+const THEME_KEYS = [
+    "primary",
+    "primary_hover",
+    "primary_focus",
+    "primary_border",
+    "secondary",
+    "secondary_hover",
+    "secondary_focus",
+    "secondary_border",
+    "success",
+    "warning",
+    "error",
+    "info",
+    "notification",
+    "background",
+    "card",
+    "border",
+    "border_hover",
+    "border_focus",
+    "text",
+    "primary_text",
+    "secondary_text",
+    "overlay",
+    "shadow",
+    "tab_bar_active",
+    "tab_bar_inactive"
+];
+
+const buildFiltered = (themeVariant = {}) => ({
+    ...themeVariant,
+    colors: filterThemeKeys(themeVariant.colors || {})
+});
+
 // ===== get full theme =====
-export const getTheme = () => currentThemeFull;
+export const getTheme = () => {
+    let theme = currentThemeFull;
+    if (!theme) return {};
+    theme.light = buildFiltered(theme.light);
+    theme.dark = buildFiltered(theme.dark);
+    theme.default = buildFiltered(theme.default);
+    return theme;
+}
 
 // ===== set theme runtime =====
 export const setTheme = (themeObject) => {
     if (!themeObject) return;
-
     const defaultTheme = createTheme(currentThemeFull.light.colors.primary);
-
     currentThemeFull = {
         light: { ...defaultTheme.light, ...(themeObject.light || {}) },
         dark: { ...defaultTheme.dark, ...(themeObject.dark || {}) },
         default: themeObject.default || (themeObject.dark ? defaultTheme.dark : defaultTheme.light),
         mode: typeof themeObject.mode != "undefined" ? themeObject.mode : defaultTheme.mode,
     };
-
     ["light", "dark"].forEach((key) => {
         currentThemeFull[key] = {
             ...currentThemeFull[key],
@@ -301,7 +366,9 @@ export const setTheme = (themeObject) => {
             fontSize: { ...defaultTheme[key].fontSize, ...(currentThemeFull[key].fontSize || {}) },
         };
     });
-
+    currentThemeFull.light = buildFiltered(currentThemeFull.light);
+    currentThemeFull.dark = buildFiltered(currentThemeFull.dark);
+    currentThemeFull.default = buildFiltered(currentThemeFull.default);
     currentTheme = currentThemeFull.default;
     notify(currentTheme);
     return currentThemeFull;
