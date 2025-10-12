@@ -28,20 +28,77 @@ export const getFontSize = (base) => {
     return Math.round(clamp(v, Math.max(10, base * 0.85), Math.max(36, base * 1.35)));
 };
 
+export const getFonts = () => {
+    const fontFamily = [
+        'system-ui',
+        '"Segoe UI"',
+        'Roboto',
+        'Helvetica',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+    ].join(', ');
+
+    return {
+        thin: {
+            fontFamily,
+            fontWeight: '100',
+        },
+        semilight: {
+            fontFamily,
+            fontWeight: '200',
+        },
+        light: {
+            fontFamily,
+            fontWeight: '300',
+        },
+        regular: {
+            fontFamily,
+            fontWeight: '400',
+        },
+        medium: {
+            fontFamily,
+            fontWeight: '500',
+        },
+        bold: {
+            fontFamily,
+            fontWeight: '600',
+        },
+        heavy: {
+            fontFamily,
+            fontWeight: '700',
+        },
+    };
+};
+
 // ===== Typography Tokens =====
 const buildTypography = (preset = "balanced") => {
     const presets = {
         balanced: {
-            mobile: { xs: 12, sm: 14, body: 16, h4: 16, h3: 18, h2: 20, h1: 24 },
-            desktop: { xs: 12, sm: 13, body: 14, h4: 15, h3: 16, h2: 18, h1: 22 },
+            mobile: {
+                xs: 12, sm: 14, body: 16, h4: 16, h3: 18, h2: 20, h1: 24
+            },
+            desktop: {
+                xs: 12, sm: 13, body: 14, h4: 15, h3: 16, h2: 18, h1: 22
+            }
         },
         web: {
-            mobile: { xs: 12, sm: 13, body: 15, h4: 15, h3: 16, h2: 18, h1: 22 },
-            desktop: { xs: 12, sm: 13, body: 14, h4: 15, h3: 16, h2: 18, h1: 20 },
+            mobile: {
+                xs: 12, sm: 13, body: 15, h4: 15, h3: 16, h2: 18, h1: 22
+            },
+            desktop: {
+                xs: 12, sm: 13, body: 14, h4: 15, h3: 16, h2: 18, h1: 20
+            },
         },
         compact: {
-            mobile: { xs: 11, sm: 13, body: 14, h4: 14, h3: 15, h2: 17, h1: 20 },
-            desktop: { xs: 11, sm: 12, body: 13, h4: 14, h3: 15, h2: 16, h1: 18 },
+            mobile: {
+                xs: 11, sm: 13, body: 14, h4: 14, h3: 15, h2: 17, h1: 20
+            },
+            desktop: {
+                xs: 11, sm: 12, body: 13, h4: 14, h3: 15, h2: 16, h1: 18
+            },
         },
     };
     const set = presets[preset] || presets.balanced;
@@ -71,6 +128,9 @@ const buildTypography = (preset = "balanced") => {
             h1: Math.round(tokens.h1 * 1.2),
         },
         fontWeight: {
+            thin: '100',
+            semilight: '200',
+            light: '300',
             regular: "400",
             medium: "500",
             semibold: "600",
@@ -107,12 +167,12 @@ function getTabBarInactive(card) {
     if (isDark) {
         color = "#B0B3B8";
         if (chroma.contrast(color, card) < 3) {
-            color = chroma(color).brighten(0.6);
+            color = chroma(color).brighten(0.45);
         }
     } else {
         color = "#2E2E2E";
         if (chroma.contrast(color, card) < 4) {
-            color = chroma.mix(color, "#000", 0.5, "lab");
+            color = chroma.mix(color, "#000", 0.25, "lab");
         }
     }
 
@@ -247,8 +307,6 @@ export const createTheme = (options = {}) => {
                 background: c.background,
                 card: c.card,
                 border: c.border,
-                border_hover: colorHover(c.border, isDark),
-                border_focus: colorFocus(c.border, isDark),
 
                 // text tokens
                 text: c.text,
@@ -276,6 +334,7 @@ export const createTheme = (options = {}) => {
                 xl: setSize(24),
             },
             fontSize: typography,
+            fonts: getFonts()
         };
     };
 
@@ -321,8 +380,6 @@ const THEME_KEYS = [
     "background",
     "card",
     "border",
-    "border_hover",
-    "border_focus",
     "text",
     "primary_text",
     "secondary_text",
@@ -393,4 +450,5 @@ export default {
     setTheme,
     getTheme,
     useTheme,
+    getFonts
 };
