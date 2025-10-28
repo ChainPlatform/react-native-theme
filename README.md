@@ -1,13 +1,28 @@
 # 🎨 @chainplatform/theme
 
-<a href="https://npmjs.com/package/@chainplatform/theme">
-  <img src="https://img.shields.io/npm/v/@chainplatform/theme.svg"></img>
-  <img src="https://img.shields.io/npm/dt/@chainplatform/theme.svg"></img>
-</a>
-<a href="https://x.com/intent/follow?screen_name=doansan"><img src="https://img.shields.io/twitter/follow/doansan.svg?label=Follow%20@doansan" alt="Follow @doansan"></img></a>
-
 A lightweight **theming system** for React Native / React Native Web.  
 Supports **light / dark mode**, **custom palettes**, **hover/focus states**, and can be used in both **Class Components** and **Function Components**.
+
+<p align="center">
+  <a href="https://github.com/ChainPlatform/react-native-theme/blob/HEAD/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" />
+  </a>
+  <a href="https://www.npmjs.com/package/@chainplatform/theme">
+    <img src="https://img.shields.io/npm/v/@chainplatform/theme?color=brightgreen&label=npm%20package" alt="Current npm package version." />
+  </a>
+  <a href="https://www.npmjs.com/package/@chainplatform/theme">
+    <img src="https://img.shields.io/npm/dt/@chainplatform/theme.svg"></img>
+  </a>
+  <a href="https://www.npmjs.com/package/@chainplatform/theme">
+    <img src="https://img.shields.io/badge/platform-android%20%7C%20ios%20%7C%20web-blue"></img>
+  </a>
+  <a href="https://github.com/ChainPlatform/react-native-theme/pulls">
+    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
+  </a>
+  <a href="https://twitter.com/intent/follow?screen_name=doansan">
+    <img src="https://img.shields.io/twitter/follow/doansan.svg?label=Follow%20@doansan" alt="Follow @doansan" />
+  </a>
+</p>
 
 ---
 
