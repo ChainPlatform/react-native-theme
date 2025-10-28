@@ -1,5 +1,5 @@
 import React from "react";
-import { PixelRatio } from "react-native";
+import { PixelRatio, Platform } from "react-native";
 import chroma from "chroma-js";
 import sdkStyles, { setSize } from "@chainplatform/layout";
 
@@ -28,6 +28,8 @@ export const getFontSize = (base) => {
     return Math.round(clamp(v, Math.max(10, base * 0.85), Math.max(36, base * 1.35)));
 };
 
+const useFontFamily = Platform.OS === 'web';
+
 export const getFonts = () => {
     const fontFamily = [
         'system-ui',
@@ -43,31 +45,31 @@ export const getFonts = () => {
 
     return {
         thin: {
-            fontFamily,
+            ...(useFontFamily && { fontFamily }),
             fontWeight: '100',
         },
         semilight: {
-            fontFamily,
+            ...(useFontFamily && { fontFamily }),
             fontWeight: '200',
         },
         light: {
-            fontFamily,
+            ...(useFontFamily && { fontFamily }),
             fontWeight: '300',
         },
         regular: {
-            fontFamily,
+            ...(useFontFamily && { fontFamily }),
             fontWeight: '400',
         },
         medium: {
-            fontFamily,
+            ...(useFontFamily && { fontFamily }),
             fontWeight: '500',
         },
         bold: {
-            fontFamily,
+            ...(useFontFamily && { fontFamily }),
             fontWeight: '600',
         },
         heavy: {
-            fontFamily,
+            ...(useFontFamily && { fontFamily }),
             fontWeight: '700',
         },
     };
