@@ -46,31 +46,31 @@ export const getFonts = () => {
     return {
         thin: {
             ...(useFontFamily && { fontFamily }),
-            fontWeight: '100',
+            fontWeight: 100,
         },
         semilight: {
             ...(useFontFamily && { fontFamily }),
-            fontWeight: '200',
+            fontWeight: 200,
         },
         light: {
             ...(useFontFamily && { fontFamily }),
-            fontWeight: '300',
+            fontWeight: 300,
         },
         regular: {
             ...(useFontFamily && { fontFamily }),
-            fontWeight: '400',
+            fontWeight: 400,
         },
         medium: {
             ...(useFontFamily && { fontFamily }),
-            fontWeight: '500',
+            fontWeight: 500,
         },
         bold: {
             ...(useFontFamily && { fontFamily }),
-            fontWeight: '600',
+            fontWeight: 600,
         },
         heavy: {
             ...(useFontFamily && { fontFamily }),
-            fontWeight: '700',
+            fontWeight: 700,
         },
     };
 };
@@ -130,13 +130,13 @@ const buildTypography = (preset = "balanced") => {
             h1: Math.round(tokens.h1 * 1.2),
         },
         fontWeight: {
-            thin: '100',
-            semilight: '200',
-            light: '300',
-            regular: "400",
-            medium: "500",
-            semibold: "600",
-            bold: "700",
+            thin: 100,
+            semilight: 200,
+            light: 300,
+            regular: 400,
+            // medium: 500,
+            semibold: 600,
+            bold: 700,
         },
     };
 };
