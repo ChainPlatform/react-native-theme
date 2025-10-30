@@ -60,10 +60,10 @@ export const getFonts = () => {
             ...(useFontFamily && { fontFamily }),
             fontWeight: 400,
         },
-        medium: {
-            ...(useFontFamily && { fontFamily }),
-            fontWeight: 500,
-        },
+        // medium: {
+        //     ...(useFontFamily && { fontFamily }),
+        //     fontWeight: 500,
+        // },
         bold: {
             ...(useFontFamily && { fontFamily }),
             fontWeight: 600,

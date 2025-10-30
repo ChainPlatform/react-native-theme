@@ -1,6 +1,6 @@
 {
     "name": "@chainplatform/theme",
-    "version": "0.6.5",
+    "version": "0.6.6",
     "main": "index.js",
     "react-native": "index.js",
     "description": "A lightweight **theming system** for React Native / React Native Web. Supports light / dark mode, custom palettes, hover/focus states, and can be used in both Class Components and Function Components.",
