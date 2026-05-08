@@ -121,16 +121,44 @@ const createPalette = (base) => {
     return palette;
 };
 
-const createNeutralPalette = (isDark) => {
+const createNeutralPalette = (
+    primary,
+    isDark
+) => {
 
-    if (isDark) {
-        return {
-            0: "#FFFFFF", 50: "#F9FAFB", 100: "#F3F4F6", 200: "#E5E7EB", 300: "#D1D5DB", 400: "#9CA3AF", 500: "#6B7280", 600: "#4B5563", 700: "#374151", 800: "#1F2937", 900: "#111827", 950: "#030712",
-        };
-    }
+    const h =
+        chroma(primary)
+            .get("oklch.h");
+
+    const c =
+        isDark
+            ? 0.012
+            : 0.006;
 
     return {
-        0: "#FFFFFF", 50: "#F9FAFB", 100: "#F3F4F6", 200: "#E5E7EB", 300: "#D1D5DB", 400: "#9CA3AF", 500: "#6B7280", 600: "#4B5563", 700: "#374151", 800: "#1F2937", 900: "#111827", 950: "#030712",
+        0: chroma.oklch(1, 0, h).hex(),
+
+        50: chroma.oklch(0.985, c, h).hex(),
+
+        100: chroma.oklch(0.96, c, h).hex(),
+
+        200: chroma.oklch(0.90, c, h).hex(),
+
+        300: chroma.oklch(0.82, c, h).hex(),
+
+        400: chroma.oklch(0.70, c, h).hex(),
+
+        500: chroma.oklch(0.56, c, h).hex(),
+
+        600: chroma.oklch(0.45, c, h).hex(),
+
+        700: chroma.oklch(0.36, c, h).hex(),
+
+        800: chroma.oklch(0.27, c, h).hex(),
+
+        900: chroma.oklch(0.20, c, h).hex(),
+
+        950: chroma.oklch(0.14, c, h).hex(),
     };
 };
 
@@ -178,7 +206,7 @@ const generateColors = (primaryBase, isDark) => {
                     .hex()
         );
 
-    const neutral = createNeutralPalette(isDark);
+    const neutral = createNeutralPalette(primaryBase, isDark);
 
     const primaryColor = chroma(primaryBase);
 
